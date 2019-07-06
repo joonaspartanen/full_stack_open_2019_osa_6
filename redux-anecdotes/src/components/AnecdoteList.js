@@ -1,44 +1,57 @@
 import React from 'react'
 import { handleVote } from '../reducers/anecdoteReducer'
 import { setSuccessNotification, clearNotification } from '../reducers/notificationReducer'
+import { connect } from 'react-redux'
 
 const AnecdoteList = (props) => {
 
-  const store = props.store
-
-  const { anecdotes, filter } = store.getState()
-
-  const anecdotesToShow = () => {
-    if (filter === '') {
-      return anecdotes
-    }
-    return anecdotes.filter(a => a.content.toLowerCase().includes(filter))
-  }
-
   const vote = (anecdote) => {
     console.log('vote', anecdote.id)
-    store.dispatch(handleVote(anecdote.id))
-    store.dispatch(setSuccessNotification(`You voted for '${anecdote.content}'`))
+    props.handleVote(anecdote.id)
+    props.setSuccessNotification(`You voted for '${anecdote.content}'`)
     setTimeout(() => {
-      store.dispatch(clearNotification())
+      props.clearNotification()
     }, 5000)
   }
 
   return (
-    anecdotesToShow()
-      .sort((a, b) => b.votes - a.votes)
-      .map(anecdote =>
-        <div key={anecdote.id}>
-          <div>
-            {anecdote.content}
-          </div>
-          <div>
-            has {anecdote.votes}
-            <button onClick={() => vote(anecdote)}>vote</button>
-          </div>
+    props.anecdotesToShow.map(anecdote =>
+      <div key={anecdote.id}>
+        <div>
+          {anecdote.content}
         </div>
-      )
+        <div>
+          has {anecdote.votes}
+          <button onClick={() => vote(anecdote)}>vote</button>
+        </div>
+      </div>
+    )
   )
 }
 
-export default AnecdoteList
+const anecdotesToShow = ({ anecdotes, filter }) => {
+  if (filter === '') {
+    return anecdotes.sort((a, b) => b.votes - a.votes)
+  }
+  return anecdotes
+    .filter(a => a.content.toLowerCase().includes(filter.toLowerCase()))
+    .sort((a, b) => b.votes - a.votes)
+}
+
+const mapStateToProps = (state) => {
+  return {
+    anecdotesToShow: anecdotesToShow(state),
+    filter: state.filter,
+  }
+}
+
+const mapDispatchToProps = {
+  handleVote,
+  setSuccessNotification,
+  clearNotification
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(AnecdoteList)
