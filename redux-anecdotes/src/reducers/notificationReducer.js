@@ -1,15 +1,17 @@
 
-export const setSuccessNotification = (notification) => {
-  return {
-    type: 'SUCCESS',
-    notification
-  }
-}
-
-export const clearNotification = () => {
-  return {
-    type: 'CLEAR',
-    notification: ''
+export const setSuccessNotification = (notification, time) => {
+  return async dispatch => {
+    dispatch({
+      type: 'SUCCESS',
+      notification
+    })
+    await new Promise((resolve) => setTimeout(() => {
+      resolve()
+    }, time * 1000))
+    dispatch({
+      type: 'CLEAR',
+      notification: ''
+    })
   }
 }
 

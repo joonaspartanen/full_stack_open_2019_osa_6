@@ -1,6 +1,6 @@
 import React from 'react'
 import { handleVote } from '../reducers/anecdoteReducer'
-import { setSuccessNotification, clearNotification } from '../reducers/notificationReducer'
+import { setSuccessNotification } from '../reducers/notificationReducer'
 import { connect } from 'react-redux'
 
 const AnecdoteList = (props) => {
@@ -8,10 +8,7 @@ const AnecdoteList = (props) => {
   const vote = (anecdote) => {
     console.log('vote', anecdote.id)
     props.handleVote(anecdote.id)
-    props.setSuccessNotification(`You voted for '${anecdote.content}'`)
-    setTimeout(() => {
-      props.clearNotification()
-    }, 5000)
+    props.setSuccessNotification(`You voted for '${anecdote.content}'`, 5)
   }
 
   return (
@@ -47,8 +44,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = {
   handleVote,
-  setSuccessNotification,
-  clearNotification
+  setSuccessNotification
 }
 
 export default connect(
